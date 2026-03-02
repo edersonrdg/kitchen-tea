@@ -25,4 +25,14 @@ export class GiftService {
   async update(id: string, updates: Partial<Gift>) {
     return this.giftModel.findByIdAndUpdate(id, updates, { new: true }).exec();
   }
+
+  async remove(id: string) {
+  const deletedGift = await this.giftModel.findByIdAndDelete(id).exec();
+  
+  if (!deletedGift) {
+    throw new NotFoundException(`Presente com ID ${id} não encontrado`);
+  }
+  
+  return { message: 'Presente removido com sucesso', id };
+}
 }

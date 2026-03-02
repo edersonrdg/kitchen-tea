@@ -24,8 +24,8 @@ export const configSwagger = (app: INestApplication) => {
             },
             'api-key',
         )
-        .addServer('http://localhost:3000', 'Servidor de Desenvolvimento')
-        .addServer('https://api.chadeckozinha.com.br', 'Servidor de Produção')
+        .addServer('http://localhost:3001/', 'Servidor de Desenvolvimento')
+        .addServer('https://api.chadecozinha.com.br', 'Servidor de Produção')
         .build();
 
     const document = SwaggerModule.createDocument(app, config);

@@ -22,12 +22,42 @@ export class Gift {
   description?: string;
 
   @ApiProperty({
+    description: 'URL do produto (link para compra)',
+    example: 'https://www.magazineluiza.com.br/jogo-de-panelas/p/123456',
+  })
+  @Prop({ required: false })
+  productUrl?: string;
+
+  @ApiProperty({
+    description: 'URL da foto/imagem do produto',
+    example: 'https://static.magazineluiza.com.br/imagem-jogo-panelas.jpg',
+  })
+  @Prop({ required: false })
+  imageUrl?: string;
+
+  @ApiProperty({
     description: 'Indica se o presente já foi reservado por alguém',
     example: false,
     default: false,
   })
   @Prop({ default: false })
-  reserved: boolean;
+  reserved?: boolean;
+
+  @ApiProperty({
+    description: 'Nome da pessoa que reservou o presente',
+    example: 'Maria Silva',
+    required: false,
+  })
+  @Prop({ required: false })
+  reservedByName?: string;
+
+  @ApiProperty({
+    description: 'Número de telefone da pessoa que reservou o presente',
+    example: '(31) 98765-4321',
+    required: false,
+  })
+  @Prop({ required: false })
+  reservedByPhone?: string;
 
   @ApiProperty({
     description: 'Data de criação do registro',

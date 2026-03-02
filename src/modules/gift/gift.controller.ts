@@ -1,8 +1,7 @@
-import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiParam,
   ApiSecurity,
   ApiBadRequestResponse,
@@ -24,8 +23,7 @@ export class GiftController {
     summary: 'Listar todos os presentes',
     description:
       'Retorna a lista completa de presentes disponíveis para o chá de cozinha. ' +
-      'Esta lista inclui presentes já reservados e disponíveis, permitindo aos convidados ' +
-      'visualizar todas as opções e identificar quais ainda estão disponíveis para reserva.',
+      'Esta lista inclui presentes já reservados e disponíveis.',
   })
   async findAll() {
     return this.giftService.findAll();
@@ -35,8 +33,7 @@ export class GiftController {
   @ApiOperation({
     summary: 'Obter detalhes de um presente específico',
     description:
-      'Retorna os detalhes completos de um presente específico baseado no seu ID. ' +
-      'Útil para visualizar informações detalhadas antes de fazer uma reserva.',
+      'Retorna os detalhes completos de um presente específico baseado no seu ID.',
   })
   @ApiParam({
     name: 'id',
@@ -52,8 +49,7 @@ export class GiftController {
   @ApiOperation({
     summary: 'Adicionar novo presente à lista',
     description:
-      'Permite adicionar um novo presente à lista do chá de cozinha. ' +
-      'Este endpoint é tipicamente usado pelos organizadores para gerenciar a lista de presentes disponíveis.',
+      'Permite adicionar um novo presente à lista do chá de cozinha.',
   })
   async create(@Body() data: CreateGiftDto) {
     return this.giftService.create(data);
@@ -63,8 +59,7 @@ export class GiftController {
   @ApiOperation({
     summary: 'Atualizar informações de um presente',
     description:
-      'Permite atualizar as informações de um presente existente, incluindo nome, descrição ' +
-      'ou status de reserva. Muito útil para marcar presentes como reservados ou atualizar detalhes.',
+      'Permite atualizar as informações de um presente existente, incluindo nome, descrição ou status de reserva.',
   })
   @ApiParam({
     name: 'id',
@@ -74,5 +69,22 @@ export class GiftController {
   })
   async updateGift(@Param('id') id: string, @Body() updates: UpdateGiftDto) {
     return this.giftService.update(id, updates);
+  }
+
+  @Delete(':id')
+  @ApiOperation({
+    summary: 'Remover um presente da lista',
+    description:
+      'Exclui permanentemente um presente da lista do chá de cozinha. ' +
+      'Útil para os organizadores removerem itens que não serão mais oferecidos.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID único do presente a ser removido',
+    example: '65a1234567890abcdef12345',
+    type: 'string',
+  })
+  async remove(@Param('id') id: string) {
+    return this.giftService.remove(id);
   }
 }
