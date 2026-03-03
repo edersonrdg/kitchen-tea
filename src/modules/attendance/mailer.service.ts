@@ -54,12 +54,28 @@ export class MailService {
     //   html,
     // });
 
-    return await this.resendTransport.emails.send({
-      from: this.configService.get<string>('EMAIL_FROM') || 'default@example.com',
-      to: this.configService.get<string>('ORGANIZER_EMAIL') || 'default@example.com',
+    const from = this.configService.get<string>('EMAIL_FROM')
+    const to = this.configService.get<string>('ORGANIZER_EMAIL')
+
+    if (!from || !to) {
+      throw new Error('EMAIL_FROM and ORGANIZER_EMAIL must be set in the environment variables');
+    }
+
+    console.debug('Sending email with the following details:', { from, to, subject, text, html });
+
+    const { data, error } = await this.resendTransport.emails.send({
+      from,
+      to,
       subject,
       text,
       html,
     })
+
+    if (error) {
+      console.error('Error sending email:', error);
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
+
+    return data
   }
 }
