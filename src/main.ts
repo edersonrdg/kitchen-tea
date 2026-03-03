@@ -13,7 +13,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:3000',
       'http://127.0.0.1:3000',
-      'https://yandg.onrender.com/' 
+      'https://yandg.onrender.com' 
             // Para evitar problemas de IPv6 no Windows/Node
       // Adicione seu domínio de produção aqui depois: 'https://seu-site.com'
     ],
