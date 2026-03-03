@@ -12,7 +12,9 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
-      'http://127.0.0.1:3000',       // Para evitar problemas de IPv6 no Windows/Node
+      'http://127.0.0.1:3000',
+      'https://yandg.onrender.com/' 
+            // Para evitar problemas de IPv6 no Windows/Node
       // Adicione seu domínio de produção aqui depois: 'https://seu-site.com'
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',  // Inclui OPTIONS para preflight
