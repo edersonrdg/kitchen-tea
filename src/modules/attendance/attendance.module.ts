@@ -13,5 +13,6 @@ import { Attendance, AttendanceSchema } from './schemas/attendance.schema';
   ],
   controllers: [AttendanceController],
   providers: [AttendanceService, MailService],
+  exports: [AttendanceService, MailService],
 })
-export class AttendanceModule {}
+export class AttendanceModule { }

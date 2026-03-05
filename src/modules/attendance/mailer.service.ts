@@ -1,27 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
-import { Resend } from 'resend'
+import sgMail from '@sendgrid/mail';
 
 @Injectable()
 export class MailService {
-  private readonly transporter: nodemailer.Transporter;
-  private readonly resendTransport: Resend;
-
   constructor(private readonly configService: ConfigService) {
-    this.transporter = nodemailer.createTransport({
-      secure: false, // true para porta 465, false para outras portas,
-      service: 'gmail',
-      auth: {
-        user: this.configService.get<string>('EMAIL_USER'),
-        pass: this.configService.get<string>('EMAIL_PASS'),
-      },
-    });
-
-    this.resendTransport = new Resend(this.configService.get<string>('RESEND_API_KEY'));
+    // Configurar SendGrid API Key
+    const sendGridApiKey = this.configService.get<string>('SENDGRID_API_KEY');
+    if (sendGridApiKey) {
+      sgMail.setApiKey(sendGridApiKey);
+    }
   }
 
-  async sendAttendanceEmail(name?: string, phone?: string, attending?: boolean, adults?: number, children?: number) {
+  async sendAttendanceEmail(name?: string, phone?: string, attending?: boolean, adults?: number, children?: number): Promise<any> {
     const isAttending = attending === true;
     const subject = isAttending ? `Confirmação de Presença: ${name}` : `Confirmação de Ausência: ${name}`;
     const text = isAttending
@@ -46,14 +37,6 @@ export class MailService {
       <p><em>Confirmação recebida em ${new Date().toLocaleString('pt-BR')}</em></p>
     `;
 
-    // return this.transporter.sendMail({
-    //   from: this.configService.get<string>('EMAIL_FROM'),
-    //   to: this.configService.get<string>('ORGANIZER_EMAIL'),
-    //   subject,
-    //   text,
-    //   html,
-    // });
-
     const from = this.configService.get<string>('EMAIL_FROM')
     const to = this.configService.get<string>('ORGANIZER_EMAIL')
 
@@ -61,21 +44,23 @@ export class MailService {
       throw new Error('EMAIL_FROM and ORGANIZER_EMAIL must be set in the environment variables');
     }
 
-    console.debug('Sending email with the following details:', { from, to, subject, text, html });
+    console.debug('Sending email with SendGrid:', { from, to, subject });
 
-    const { data, error } = await this.resendTransport.emails.send({
-      from,
-      to,
-      subject,
-      text,
-      html,
-    })
+    try {
+      const emailData = {
+        to,
+        from,
+        subject,
+        text,
+        html,
+      };
 
-    if (error) {
-      console.error('Error sending email:', error);
-      throw new Error(`Failed to send email: ${error.message}`);
+      const result = await sgMail.send(emailData);
+      console.log('✅ Email enviado com sucesso via SendGrid:', result[0].statusCode);
+      return result;
+    } catch (error) {
+      console.error('❌ Erro ao enviar email via SendGrid:', error.response?.body || error.message);
+      throw new Error(`Failed to send email via SendGrid: ${error.response?.body?.errors?.[0]?.message || error.message}`);
     }
-
-    return data
   }
 }

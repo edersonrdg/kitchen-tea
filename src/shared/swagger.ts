@@ -24,7 +24,7 @@ export const configSwagger = (app: INestApplication) => {
             },
             'api-key',
         )
-        .addServer('http://localhost:3001/', 'Servidor de Desenvolvimento')
+        .addServer(`http://localhost:${process.env.PORT || 3000}`, 'Servidor de Desenvolvimento')
         .addServer('https://kitchen-tea-api.onrender.com', 'Servidor de Produção')
         .build();
 
