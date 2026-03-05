@@ -11,14 +11,16 @@ export class AttendanceService {
     @InjectModel(Attendance.name)
     private attendanceModel: Model<AttendanceDocument>,
     private readonly mailService: MailService,
-  ) {}
+  ) { }
 
   async registerAttendance(name?: string, phone?: string, attending?: boolean, adults?: number, children?: number) {
     const confirmation = new this.attendanceModel({ name, phone, attending, adults, children });
     await confirmation.save();
 
     // Disparar email após confirmação
-    await this.mailService.sendAttendanceEmail(name, phone, attending, adults, children);
+    setImmediate(() => {
+      this.mailService.sendAttendanceEmail(name, phone, attending, adults, children);
+    })
 
     return { message: 'Resposta registrada e email enviado.' };
   }
