@@ -60,7 +60,6 @@ export class MailService {
       return result;
     } catch (error) {
       console.error('❌ Erro ao enviar email via SendGrid:', error.response?.body || error.message);
-      throw new Error(`Failed to send email via SendGrid: ${error.response?.body?.errors?.[0]?.message || error.message}`);
     }
   }
 }
