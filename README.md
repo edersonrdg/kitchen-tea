@@ -7,6 +7,7 @@ Uma API completa para gerenciamento de chá de cozinha, permitindo aos convidado
 - 🎁 **Lista de Presentes**: Gerenciamento completo da lista de presentes do chá de cozinha
 - ✅ **Confirmação de Presença**: Sistema para confirmação de presença dos convidados
 - 📧 **Notificação por Email**: Envio automático de emails para os organizadores a cada confirmação
+- 📱 **Bot WhatsApp**: Notificação automática de novos cadastros no número autenticado via QR
 - 🔐 **Autenticação API Key**: Segurança através de chave de API
 - 📚 **Documentação Swagger**: Documentação interativa completa da API
 - ✨ **Validação de Dados**: Validação robusta de entrada de dados
@@ -17,6 +18,7 @@ Uma API completa para gerenciamento de chá de cozinha, permitindo aos convidado
 - **MongoDB**: Banco de dados NoSQL com Mongoose
 - **Swagger/OpenAPI**: Documentação automática da API
 - **Nodemailer**: Envio de emails
+- **Baileys**: Integração não oficial com WhatsApp
 - **Class Validator**: Validação de dados de entrada
 - **TypeScript**: Tipagem estática para JavaScript
 
@@ -55,6 +57,9 @@ Uma API completa para gerenciamento de chá de cozinha, permitindo aos convidado
    
    # Porta da aplicação
    PORT=3000
+
+    # Configuração WhatsApp (Baileys)
+    WHATSAPP_AUTH_FOLDER=whatsapp-auth
    ```
 
 4. **Inicie a aplicação**
@@ -94,6 +99,16 @@ X-API-Key: sua-chave-secreta-aqui
 
 ### Confirmação de Presença
 - **POST** `/api/attendance` - Confirmar presença
+
+## WhatsApp Bot
+
+Após iniciar a aplicação, o bot gera um QR no terminal na primeira execução.
+
+1. Escaneie o QR com o WhatsApp do número que será usado pelo bot.
+2. Aguarde o log `WhatsApp conectado com sucesso.`
+
+Comportamentos implementados:
+- Toda nova inserção em `attendance` envia uma notificação para o próprio número autenticado no QR.
 
 ## 📝 Exemplos de Uso
 

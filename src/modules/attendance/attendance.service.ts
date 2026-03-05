@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Attendance, AttendanceDocument } from './schemas/attendance.schema';
 import { MailService } from './mailer.service';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
+import { WhatsappService } from '../whatsapp/whatsapp.service';
 
 @Injectable()
 export class AttendanceService {
@@ -11,16 +12,34 @@ export class AttendanceService {
     @InjectModel(Attendance.name)
     private attendanceModel: Model<AttendanceDocument>,
     private readonly mailService: MailService,
+    @Inject(forwardRef(() => WhatsappService))
+    private readonly whatsappService: WhatsappService,
   ) { }
 
   async registerAttendance(name?: string, phone?: string, attending?: boolean, adults?: number, children?: number) {
-    const confirmation = new this.attendanceModel({ name, phone, attending, adults, children });
+    const confirmation = new this.attendanceModel({
+      name,
+      phone,
+      attending,
+      adults,
+      children,
+    });
     await confirmation.save();
 
     // Disparar email após confirmação
     setImmediate(() => {
-      this.mailService.sendAttendanceEmail(name, phone, attending, adults, children);
-    })
+      this.mailService.sendAttendanceEmail(
+        name,
+        phone,
+        attending,
+        adults,
+        children,
+      );
+    });
+
+    setImmediate(() => {
+      void this.whatsappService.notifyNewAttendance(confirmation);
+    });
 
     return { message: 'Resposta registrada e email enviado.' };
   }

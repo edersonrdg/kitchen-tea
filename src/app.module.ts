@@ -4,6 +4,7 @@ import { GiftModule } from './modules/gift/gift.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
 import { ConfigModule } from '@nestjs/config';
 import { HealthController } from './modules/health/health.controller';
+import { WhatsappModule } from './modules/whatsapp/whatsapp.module';
 
 // Importar conexões e os módulos do MongoDB
 @Module({
@@ -14,6 +15,7 @@ import { HealthController } from './modules/health/health.controller';
     ),
     GiftModule,
     AttendanceModule,
+    WhatsappModule,
   ],
   controllers: [HealthController]
 })
