@@ -17,7 +17,6 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
         };
         ws: { close: () => void };
         sendMessage: (jid: string, content: { text: string }) => Promise<unknown>;
-        user?: { id?: string };
     };
     private disconnectLoggedOutCode?: number;
     private isConnected = false;
@@ -33,9 +32,9 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
     }
 
     async notifyNewAttendance(attendance: Attendance): Promise<void> {
-        const destinationJid = this.resolveSelfJid();
+        const destinationJid = this.resolveGroupJid();
         if (!destinationJid) {
-            this.logger.warn('Sessao WhatsApp sem JID proprio resolvido. Notificacao nao enviada.');
+            this.logger.warn('WHATSAPP_GROUP_JID nao configurado ou invalido. Notificacao nao enviada.');
             return;
         }
 
@@ -93,9 +92,9 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
             if (connection === 'open') {
                 this.isConnected = true;
                 this.logger.log('WhatsApp conectado com sucesso.');
-                const selfJid = this.resolveSelfJid();
-                if (selfJid) {
-                    this.logger.log(`Notificacoes serao enviadas apenas para o proprio numero: ${selfJid}`);
+                const groupJid = this.resolveGroupJid();
+                if (groupJid) {
+                    this.logger.log(`Notificacoes serao enviadas apenas para o grupo: ${groupJid}`);
                 }
             }
 
@@ -174,26 +173,13 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
         await this.socket.sendMessage(jid, { text });
     }
 
-    private resolveSelfJid(): string | null {
-        const rawSelfId = this.socket?.user?.id;
-        const normalizedSelf = this.normalizePhone(rawSelfId);
-        if (!normalizedSelf) {
+    private resolveGroupJid(): string | null {
+        const groupJid = this.configService.get<string>('WHATSAPP_GROUP_JID')?.trim();
+        if (!groupJid || !groupJid.endsWith('@g.us')) {
             return null;
         }
 
-        return `${normalizedSelf}@s.whatsapp.net`;
-    }
-
-    private normalizePhone(value?: string): string {
-        if (!value) {
-            return '';
-        }
-
-        return value
-            .replace(/:[0-9]+@s\.whatsapp\.net$/, '')
-            .replace(/@s\.whatsapp\.net$/, '')
-            .replace(/@lid$/, '')
-            .replace(/\D/g, '');
+        return groupJid;
     }
 
     private delay(ms: number): Promise<void> {
